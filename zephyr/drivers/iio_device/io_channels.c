@@ -681,6 +681,7 @@ static int iio_device_io_channels_write_attr(const struct device *dev,
 {
 	const struct iio_device_io_channels_config *config = dev->config;
 	int index = 0;
+	int ret;
 
 	switch (attr->type) {
 	case IIO_ATTR_TYPE_CHANNEL:
@@ -691,15 +692,18 @@ static int iio_device_io_channels_write_attr(const struct device *dev,
 			return -EINVAL;
 		}
 		if (!strcmp(attr->name, raw_name)) {
-			return iio_device_io_channels_write_channel_raw(dev, index, src, len);
+			ret = iio_device_io_channels_write_channel_raw(dev, index, src, len);
 		} else if (!strcmp(attr->name, gain_name)) {
-			return iio_device_io_channels_write_channel_gain(dev, index, src, len);
+			ret = iio_device_io_channels_write_channel_gain(dev, index, src, len);
 		} else if (!strcmp(attr->name, reference_name)) {
-			return iio_device_io_channels_write_channel_reference(dev, index, src, len);
+			ret = iio_device_io_channels_write_channel_reference(dev, index, src, len);
 		} else if (!strcmp(attr->name, differential_name)) {
-			return iio_device_io_channels_write_channel_differential(dev, index, src, len);
+			ret = iio_device_io_channels_write_channel_differential(dev, index, src, len);
+		} else {
+			break;
 		}
-		break;
+
+		return ret ? ret : (int)len;
 
 	case IIO_ATTR_TYPE_DEVICE:
 		break;
